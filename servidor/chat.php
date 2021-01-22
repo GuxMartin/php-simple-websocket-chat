@@ -98,9 +98,8 @@ class chat_server extends WebSocketServer {
 }// class chat_server
 
 //$echo = new chat_server("0.0.0.0","9000");
-// $echo = new chat_server("127.0.0.1","5000");
-// $echo = new chat_server("127.0.0.1","5001");
-$echo = new chat_server("192.168.10.10","5001");
+$echo = new chat_server("127.0.0.1","5001");
+// $echo = new chat_server("192.168.10.10","5001");
 
 try {
   $echo->run();

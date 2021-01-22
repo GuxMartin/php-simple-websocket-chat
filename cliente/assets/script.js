@@ -1,6 +1,6 @@
-// let host = "ws://127.0.0.1:5001";
+let host = "ws://127.0.0.1:5001";
 // let host = "ws://192.168.10.10:5001";
-let host = "ws://homestead.test:5001";
+// let host = "ws://homestead.test:5001";
 
 let socket;
 let status_chat = 0;
