@@ -61,8 +61,8 @@ class chat_server extends WebSocketServer {
           }
         }
         else{
-          $this->send($this->users[$json_recibido->sala_destino], json_encode($array_mensaje));
-          $this->send($this->users[$user->id], json_encode($array_mensaje));
+          $this->send($this->users[$json_recibido->sala_destino], json_encode($mensaje_arr));
+          $this->send($this->users[$user->id], json_encode($mensaje_arr));
         }
       break;// /mensaje
 
