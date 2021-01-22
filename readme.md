@@ -6,7 +6,7 @@ Usa la librería https://github.com/ghedipunk/PHP-Websockets
 
 ## Servidor
 
-* Mover a la carpeta servidor `mv servidor`
+* Mover a la carpeta servidor `cd servidor`
 * Opcional: editar parámetros en `chat.php`
 * Ejecutar servidor `./chat.php` o `php chat.php`
 
