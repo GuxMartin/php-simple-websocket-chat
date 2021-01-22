@@ -1,0 +1,19 @@
+#chat_container{
+	height:400px;
+	height: calc(100vh - 200px);
+	border:1px solid #DDD;
+	padding: 10px;
+	overflow-y: scroll;
+}
+
+#chat_container .media{
+	border-bottom: 1px solid #DDD;
+	padding-bottom: 4px;
+	padding-top: 4px;
+}
+#chat_container .media:nth-child(2n){
+	background-color: #EEE;
+}
+#lista_salas{
+	opacity: 0.5;
+}
