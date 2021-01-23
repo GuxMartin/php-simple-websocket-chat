@@ -54,6 +54,7 @@ class chat_server extends WebSocketServer {
           $this->broadcast($mensaje_arr);
         }
         else{
+          if(! array_key_exists($json_recibido->sala_destino, $this->users)){ echo "Usuario ".$json_recibido->sala_destino." no existe\n"; break; }
           $this->send($this->users[$json_recibido->sala_destino], json_encode($mensaje_arr));
           $this->send($this->users[$user->id], json_encode($mensaje_arr));
         }
@@ -72,6 +73,7 @@ class chat_server extends WebSocketServer {
           $this->broadcast($mensaje_arr);
         }
         else{
+          if(! array_key_exists($json_recibido->sala, $this->users)){ echo "Usuario ".$json_recibido->sala." no existe\n"; break; }
           $this->send($this->users[$json_recibido->sala], json_encode($mensaje_arr));
           $this->send($this->users[$json_recibido->user->id], json_encode($mensaje_arr));
         }
