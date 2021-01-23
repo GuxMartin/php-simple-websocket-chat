@@ -5,8 +5,9 @@ let host = "ws://127.0.0.1:5001";
 let socket;
 let status_chat = 0;
 let user = {
-  "id": 0,
-  "username": "",
+  id: 0,
+  username: '',
+  typing: false,
 };
 let historial_salas = {};
 let sala_actual = '';
@@ -18,6 +19,8 @@ $( document ).ready(function() {
   }
   crear_sala('sala_publica', 'SALA PÚBLICA');
   cambiar_sala('sala_publica');
+
+  $("#mensaje").keyup(typing_eval);
 });// /document ready
 
 
@@ -76,23 +79,48 @@ function process_server_msg(msg){
     break;
 
     case 'usuario_exit':
+      // Si estaba escribiendo en la sala pública... borrar
+      var index = historial_salas.sala_publica.typing.indexOf(json.id);
+      if(index >= 0){
+        historial_salas.sala_publica.typing.splice(index, 1);
+        update_badge_typing('sala_publica');
+      }
+      // Borrar de historial_salas
+      if(json.id in historial_salas){
+        delete historial_salas[json.id]
+      }
       $("#"+json.id).remove();
-      // TODO: borrar de historial_salas
     break;
 
     case 'nuevo_mensaje':
-      let sala = json.id_destino == "sala_publica" ? "sala_publica" : (json.id_origen == user.id ? json.id_destino : json.id_origen);
+      var sala = json.id_destino == "sala_publica" ? "sala_publica" : (json.id_origen == user.id ? json.id_destino : json.id_origen);
       historial_salas[sala].mensajes.push(json);
       if(sala == sala_actual){
         chat_append(json);
         scroll_bottom();
       }
       else{
-        update_badge(sala);
+        update_badge_no_leidos(sala);
       }
     break;// /nuevo_mensaje
 
-    default: alert("Opcion no conocida: " + json.opcion); break;
+    case 'typing':
+      var sala = json.sala == "sala_publica" ? "sala_publica" : json.user_id;
+      // Si la sala es la misma que el usuario, significa que él mismo
+      // está escribiendo en la sala actual:
+      if(sala == user.id){ sala = sala_actual; }
+      if(! (sala in historial_salas)){ console.log(sala); return; }
+      var index = historial_salas[sala].typing.indexOf(json.user_id);
+      if(json.status){
+        historial_salas[sala].typing.push(json.user_id);
+      }
+      else{
+        historial_salas[sala].typing.splice(index, 1);
+      }
+      update_badge_typing(sala);
+    break;// /nuevo_mensaje
+
+    default: console.log("Opcion no conocida: " + json.opcion); break;
 
   }// /switch
 }// /process_server_msg
@@ -171,19 +199,43 @@ function enviar_mensaje(){
  * @param  {string} id
  */
 function crear_sala(id, username){
-  $("#lista_salas").append(`<a href="javascript:cambiar_sala('${id}');" id="${id}" class="list-group-item list-group-item-action">${username}<span class="badge badge-danger badge-pill float-right invisible">0</span></a>`);
+  $("#lista_salas").append(`
+    <a href="javascript:cambiar_sala('${id}');" id="${id}" class="list-group-item list-group-item-action">
+      ${username}
+      <span class="no_leidos badge badge-danger badge-pill float-right invisible">0</span>
+      <span class="typing badge badge-info badge-pill float-right invisible"></span>
+    </a>`);
   historial_salas[id] = {
     "no_leidos": 0,
     "mensajes": [],
+    "typing": [],
   };
 }// /crear_sala
 
 
 /**
- * Borra la actual conversació y carga el historial de esa sala
- * @param  {string} sala  Identificador de la sala
+ * Evalúa si se está escribiendo o no
+ */
+function typing_eval(){
+  if(! socket){ return; }
+  let is_typing = $(this).val().length ? true : false;
+  if(is_typing != user.typing){
+    user.typing = is_typing;
+    send_json({opcion: 'typing', user: user, sala: sala_actual})
+  }
+}// /typing_eval
+
+
+/**
+ * Si estaba escribiendo, envía la señal de que dejó de escribir en la actual sala (antes de cambiar)
+ * Borra la actual conversación y carga el historial de esa sala
+ * @param  {string} sala  Identificador de la sala a cambiar
  */
 function cambiar_sala(sala){
+  if(user.typing){
+    user.typing = 0;
+    send_json({opcion: 'typing', user: user, sala: sala_actual});
+  }
   if(sala == sala_actual){ return; }
   sala_actual = sala;
   $("#lista_salas a").removeClass("active");
@@ -193,7 +245,7 @@ function cambiar_sala(sala){
     chat_append(historial_salas[sala].mensajes[i]);
   }
   scroll_bottom();
-  update_badge(sala, true);
+  update_badge_no_leidos(sala, true);
 }// /cambiar_sala
 
 
@@ -219,17 +271,28 @@ function chat_append(json){
 
 
 /**
- * Actualiza el contador de la sala
+ * Actualiza el contador de mensajes no leídos de tal sala
  * @param  {string}  sala
  * @param  {boolean} reset
  */
-function update_badge(sala, reset){
+function update_badge_no_leidos(sala, reset){
   reset = reset || false;
   historial_salas[sala].no_leidos = reset ? 0 : historial_salas[sala].no_leidos + 1;
-  $(`#${sala} .badge`)
+  $(`#${sala} .badge.no_leidos`)
     .text(historial_salas[sala].no_leidos)
     .toggleClass('invisible', !historial_salas[sala].no_leidos);
-}// /update_badge
+}// /update_badge_no_leidos
+
+
+/**
+ * Actualiza el contador de usuarios escribiendo de tal sala
+ * @param  {string}  sala
+ */
+function update_badge_typing(sala){
+  $(`#${sala} .badge.typing`)
+    .text(historial_salas[sala].typing.length+' …')
+    .toggleClass('invisible', !historial_salas[sala].typing.length);
+}// /update_badge_typing
 
 
 /**

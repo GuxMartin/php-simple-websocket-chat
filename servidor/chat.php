@@ -59,6 +59,24 @@ class chat_server extends WebSocketServer {
         }
       break;// /mensaje
 
+      case "typing":
+        // echo print_r($json_recibido, 1);
+        $mensaje_arr = [
+          "opcion" => 'typing',
+          "sala" => $json_recibido->sala,
+          "status" => $json_recibido->user->typing,
+          "username" => $json_recibido->user->username,
+          "user_id" => $json_recibido->user->id,
+        ];
+        if($json_recibido->sala == 'sala_publica'){
+          $this->broadcast($mensaje_arr);
+        }
+        else{
+          $this->send($this->users[$json_recibido->sala], json_encode($mensaje_arr));
+          $this->send($this->users[$json_recibido->user->id], json_encode($mensaje_arr));
+        }
+      break;// /typing
+
       default: $this->send($user,'Opcion no válida'); break;
 
     }// /switch
