@@ -71,6 +71,7 @@ function process_server_msg(msg){
     break;
 
     case 'nuevo_usuario':
+      if(json.id == user.id){ return; }
       crear_sala(json.id, json.username);
     break;
 

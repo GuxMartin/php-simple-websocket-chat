@@ -27,23 +27,18 @@ class chat_server extends WebSocketServer {
         echo "NUEVO USUARIO RECIBIDO: ".$json_recibido->username."\n";
 
         $this->usuarios[$user->id] = $json_recibido->username;
-        // echo json_encode($this->usuarios)."\n\n";
+        // echo print_r($this->usuarios, 1);
 
-        // MANDAR LISTA DE USUARIOS AL RECIEN CONECTADO
         $this->send($user,json_encode([
           "opcion" => "lista_usuarios",
           "usuarios" => $this->usuarios,
         ]));
 
-        // MANDAR JSON a todos los usuarios menos al nuevo
-        foreach ($this->users as $user_){
-          if($user_->id == $user->id){ continue; }
-          $this->send($user_, json_encode([
-            "opcion" => "nuevo_usuario",
-            "id" => $user->id,
-            "username" => $json_recibido->username,
-          ]));
-        }// /foreach
+        $this->broadcast([
+          "opcion" => "nuevo_usuario",
+          "id" => $user->id,
+          "username" => $json_recibido->username,
+        ]);
       break;// /registrar_usuario
 
       case 'mensaje':
@@ -56,9 +51,7 @@ class chat_server extends WebSocketServer {
           "fecha" => date("c"),
         ];
         if($json_recibido->sala_destino == 'sala_publica'){
-          foreach ($this->users as $user_){
-            $this->send($user_, json_encode($mensaje_arr));
-          }
+          $this->broadcast($mensaje_arr);
         }
         else{
           $this->send($this->users[$json_recibido->sala_destino], json_encode($mensaje_arr));
@@ -81,19 +74,29 @@ class chat_server extends WebSocketServer {
   }// /connected
 
   protected function closed($user){
-    unset($this->usuarios[$user->id]);
     // echo print_r($user,1);
+    unset($this->usuarios[$user->id]);
 
-    $array_usuario_exit = [
+    $this->broadcast([
       "opcion" => "usuario_exit",
-      "id" => $user->id
-    ];
-    foreach ($this->users as $user_){// sending to all connected users
-      if($user_->id != $user->id){
-        $this->send($user_, json_encode($array_usuario_exit));
-      }
-    }// /foreach
+      "id" => $user->id,
+    ]);
   }// /closed
+
+
+  /**
+   * Transmitir a todos los usuarios conectados
+   * @param  string $msg
+   */
+  private function broadcast($msg){
+    $type = gettype($msg);
+    if($type == "array"){
+      $msg = json_encode($msg);
+    }
+    foreach($this->users as $user_){
+      $this->send($user_, $msg);
+    }// /foreach
+  }// /broadcast
 
 }// class chat_server
 
