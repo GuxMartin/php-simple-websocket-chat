@@ -1,16 +1,24 @@
 # PHP Simple WebSocket Chat
 
-Usa la librería https://github.com/ghedipunk/PHP-Websockets
-
 ![Pantalla](cliente/img/pantallaso.jpg)
 
-## Servidor
+Usa la librería https://github.com/ghedipunk/PHP-Websockets
+
+## Características
+* Sala pública
+* Sala privada por usuario conectado
+* Contador de mensajes sin leer por sala
+* Contador de usuarios escribiendo por sala
+
+## Manual
+
+### Correr servidor
 
 * Mover a la carpeta servidor `cd servidor`
 * Opcional: editar parámetros en `chat.php`
 * Ejecutar servidor `./chat.php` o `php chat.php`
 
-## Cliente
+### Correr en cliente
 * Abrir cliente/index.html
 * Modificar parámetros de servidor y nombre de usuario
 * Conectar
