@@ -3,6 +3,10 @@
 
 // https://github.com/ghedipunk/PHP-Websockets
 
+# Al ejecutar el script desde la terminal no existe $ _SERVER ['DOCUMENT_ROOT'] éste solo esta disponible desde Apache
+# Cambiar el working directory al actual
+# https://stackoverflow.com/questions/45692982/require-once-doesnt-work-in-command-line
+chdir(__DIR__);
 require_once('./PHP-Websockets-master/websockets.php');
 
 class chat_server extends WebSocketServer {
@@ -121,8 +125,13 @@ class chat_server extends WebSocketServer {
 }// class chat_server
 
 //$echo = new chat_server("0.0.0.0","9000");
-$echo = new chat_server("127.0.0.1","5001");
-// $echo = new chat_server("192.168.10.10","5001");
+//$echo = new chat_server("127.0.0.1","5001");
+//$echo = new chat_server("192.168.10.10","5001");
+
+// Obtener la IP address del web server automáticamente
+$host = gethostname();
+$ip_address = gethostbyname($host);
+$echo = new chat_server($ip_address,"5001");
 
 try {
   $echo->run();
