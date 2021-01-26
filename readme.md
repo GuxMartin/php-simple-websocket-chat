@@ -60,7 +60,7 @@ Usa la librería https://github.com/ghedipunk/PHP-Websockets
 	GitCommit:        de40ad0
 	```
 * [PHP Docker Official Images](https://hub.docker.com/_/php)
- * Tag: [7.4-apache](https://github.com/docker-library/php/blob/74175669f4162058e1fb0d2b0cf342e35f9c0804/7.4/buster/apache/Dockerfile) 
+ * Tag: [7.4-apache](https://github.com/docker-library/php/blob/74175669f4162058e1fb0d2b0cf342e35f9c0804/7.4/buster/apache/Dockerfile)
  * Esta imagen contiene Apache httpd de Debian junto con PHP
  * PHP Version 7.4.14
  * Apache 2.0 Handler
@@ -80,7 +80,7 @@ Usa la librería https://github.com/ghedipunk/PHP-Websockets
 		Master socket: Resource id #6
 	```
 
-### Como correr el contenedor 
+### Como correr el contenedor
 * Cambiar el working directory a `cd docker-container`
 * **Nota:** La ejecución del contenedor se realiza en modo interactivo `--interactive , -i` `--tty , -t`.
 * Correr `run_container.bat` o ejecutar el comando:
@@ -115,7 +115,7 @@ Usa la librería https://github.com/ghedipunk/PHP-Websockets
 ### Como acceder a la terminal bin/bash del contenedor
 * Correr `exec_container_bash.bat` o ejecuta el comando `docker container exec -it php_container /bin/bash`
   * [docker exec](https://docs.docker.com/engine/reference/commandline/exec/)
-  
+
 ### Como acceder al cliente
 * Desde el navegador acceder a la URL http://localhost/cliente/
 
@@ -123,20 +123,20 @@ Usa la librería https://github.com/ghedipunk/PHP-Websockets
 * Desde el navegador acceder a URL http://localhost/
 
 ### Linux
-
-### Creación de imagen PHP personalizada
 * Cambiar el working directory a la raíz del proyecto `cd php-simple-websocket-chat`
-	* Ejecutar el comando:
-		```
-		docker build -t php-simple-websocket-chat .
-		docker run --rm -it \
-			-v /home/downloads/php-simple-websocket-chat/:/var/www/html/ \
-			--expose 80 \
-			--expose 5001 \
-			-p 80:80 -p 5001:5001 \
-			--name php_container \
-			php-simple-websocket-chat
-		```
-### Como correr el contenedor 
-* Ejecutar el comando: `docker container exec -it php_container /bin/bash`
-
+* Creación de la imagen:
+```
+docker build -t php-simple-websocket-chat .
+```
+* Correr contenedor
+```
+docker run --rm -it \
+	-v "$(pwd)/cliente/":/var/www/html/cliente/ \
+	-v "$(pwd)/servidor/":/var/www/html/servidor/ \
+	-v "$(pwd)/src/index.php":/var/www/html/servidor/index.php \
+	--expose 80 \
+	--expose 5001 \
+	-p 80:80 -p 5001:5001 \
+	--name php_container \
+	php-simple-websocket-chat
+```
