@@ -65,13 +65,14 @@ Usa la librería https://github.com/ghedipunk/PHP-Websockets
  * PHP Version 7.4.14
  * Apache 2.0 Handler
 
-### Creación de imagen PHP personalizada
+#### Creación de imagen PHP personalizada
 * Cambiar el working directory a la raíz del proyecto `cd php-simple-websocket-chat`
 * Correr `build_image.bat` o ejecutar el comando `run_chat_serverdocker build -t php-simple-websocket-chat .`
   * El batch file construye la Docker image leyendo las instrucciones del `Dockerfile`, en éste documento de texto (sin extensión) se ejecutan los comandos de instalación para las extensiones necesarias, la especificación para que el contenedor escuche los puertos a usar `80` y `5001`, así como la declaración de los directorios a montar, copia y cambio de permisos de los scripts, así como la ejecución del [wrapper](https://docs.docker.com/config/containers/multi-service_container/) usado para correr varios servicios al inicio del contenedor.
   * **Nota**:  La implementación del [wrapper](https://docs.docker.com/config/containers/multi-service_container/) fue necesaria debido a que `apachectl -D FOREGROUND` se ejecuta en primer plano. En otras palabras, bloquea la ejecución del script del servidor hasta que `apachectl` termina de ejecutarse.
   De otra manera puede ser, ejecutando el contenedor que inicia por defecto `apachectl -D FOREGROUND` y en otra sesión correr el servidor manualmente.
-	#### Como correr el servidor manualmente
+
+#### Como correr el servidor manualmente
 	* Correr `run_chat_server.bat` o ejecutar el comando `docker container exec -it php_container /srv/run_chat_server.sh`
 	* Ejemplo de ejecución del servidor:
 	```
@@ -80,7 +81,7 @@ Usa la librería https://github.com/ghedipunk/PHP-Websockets
 		Master socket: Resource id #6
 	```
 
-### Como correr el contenedor
+#### Como correr el contenedor
 * Cambiar el working directory a `cd docker-container`
 * **Nota:** La ejecución del contenedor se realiza en modo interactivo `--interactive , -i` `--tty , -t`.
 * Correr `run_container.bat` o ejecutar el comando:
@@ -112,14 +113,15 @@ Usa la librería https://github.com/ghedipunk/PHP-Websockets
 	[Tue Jan 26 19:44:49.788786 2021] [mpm_prefork:notice] [pid 12] AH00163: Apache/2.4.38 (Debian) PHP/7.4.14 configured -- resuming normal operations
 	[Tue Jan 26 19:44:49.788862 2021] [core:notice] [pid 12] AH00094: Command line: '/usr/sbin/apache2 -D FOREGROUND'
 	```
-### Como acceder a la terminal bin/bash del contenedor
+
+#### Como acceder a la terminal bin/bash del contenedor
 * Correr `exec_container_bash.bat` o ejecuta el comando `docker container exec -it php_container /bin/bash`
   * [docker exec](https://docs.docker.com/engine/reference/commandline/exec/)
 
-### Como acceder al cliente
+#### Como acceder al cliente
 * Desde el navegador acceder a la URL http://localhost/cliente/
 
-### Obtener información de PHP
+#### Obtener información de PHP
 * Desde el navegador acceder a URL http://localhost/
 
 ### Linux
